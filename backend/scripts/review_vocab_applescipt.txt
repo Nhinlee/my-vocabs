@@ -1,0 +1,34 @@
+set apiUrl to "http://localhost:8080/api/v1/words/review"
+
+try
+	-- Execute the curl command to make the HTTP request
+	set curlCommand to "curl -s " & quoted form of apiUrl
+	set response to do shell script curlCommand
+	
+	-- Parse the JSON response to extract the list of words
+	set jsonStart to offset of "{\"words\":[" in response
+	set jsonEnd to offset of "]}" in response
+	
+	if jsonStart > 0 and jsonEnd > jsonStart then
+		set wordsList to text (jsonStart + 11) thru (jsonEnd - 2) of response
+		set AppleScript's text item delimiters to "\",\""
+		set wordsArray to text items of wordsList
+		set AppleScript's text item delimiters to linefeed
+		set formattedWords to wordsArray as string
+	else
+		error "Failed to parse response."
+	end if
+	
+	-- Create a new reminder with the words in the Notes section
+	tell application "Reminders"
+		set newReminder to make new reminder with properties {name:"Learn & Review Your Vocabs", body:formattedWords, priority:1}
+		-- You can also set an alert time if needed
+		set due date of newReminder to (current date) + 1 * hours -- Set due time to one hour from now (customize as needed)
+	end tell
+	
+on error errMsg
+	-- Handle errors by displaying an error message
+	tell application "System Events"
+		display dialog "Error: " & errMsg with title "Error" buttons {"OK"}
+	end tell
+end try

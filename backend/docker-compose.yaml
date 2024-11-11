@@ -1,3 +1,4 @@
+name: ai_learning_vocabs
 services:
   my_vocabs:
     image: my_vocabs:latest
