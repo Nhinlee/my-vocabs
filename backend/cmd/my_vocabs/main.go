@@ -2,6 +2,7 @@ package main
 
 import (
 	"log"
+
 	"my_vocabs/internal/my_vocabs/apis"
 	"my_vocabs/internal/my_vocabs/config"
 )
