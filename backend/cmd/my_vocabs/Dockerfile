@@ -3,11 +3,12 @@ FROM golang:1.23-alpine AS builder
 
 WORKDIR /app
 
+# Cache Go modules
 COPY go.mod go.sum ./
-RUN go mod download -x
+RUN --mount=type=cache,target=/go/pkg/mod go mod download -x
 
 COPY ./cmd/my_vocabs ./
-RUN go build -o main .
+RUN --mount=type=cache,target=/go/pkg/mod go build -o main .
 
 # Stage 2: Execute binary
 FROM gcr.io/distroless/base-nossl-debian12:latest
