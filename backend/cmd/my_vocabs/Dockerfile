@@ -9,6 +9,7 @@ RUN --mount=type=cache,target=/go/pkg/mod go mod download -x
 
 COPY ./cmd/my_vocabs ./
 COPY ./internal/my_vocabs ./internal/my_vocabs
+COPY ./pkg ./pkg
 RUN --mount=type=cache,target=/go/pkg/mod go build -o main .
 
 # Stage 2: Execute binary

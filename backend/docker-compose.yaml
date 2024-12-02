@@ -1,7 +1,20 @@
 name: ai_learning_vocabs
 services:
+  db:
+    image: postgres:17-alpine
+    container_name: postgres_db
+    shm_size: 128mb
+    environment:
+      POSTGRES_USER: nhinlee
+      POSTGRES_PASSWORD: 123456
+      POSTGRES_DB: my_vocabs
+    volumes:
+      - my_vocabs_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
   my_vocabs:
     image: my_vocabs:latest
+    container_name: my_vocabs
     build:
       context: .
       dockerfile: ./cmd/my_vocabs/Dockerfile
@@ -10,3 +23,8 @@ services:
     environment:
       - GIN_MODE=release
     restart: unless-stopped
+    depends_on:
+      - db
+
+volumes:
+  my_vocabs_data:

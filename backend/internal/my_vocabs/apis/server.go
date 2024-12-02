@@ -2,19 +2,21 @@ package apis
 
 import (
 	"my_vocabs/internal/my_vocabs/config"
+	db "my_vocabs/internal/my_vocabs/db/sqlc"
 
 	"github.com/gin-gonic/gin"
 )
 
 type Server struct {
-	cfg    *config.Config
-	router *gin.Engine
-	// TODO: DB store
+	cfg     *config.Config
+	router  *gin.Engine
+	dbStore db.Store
 }
 
-func NewServer(config *config.Config) (*Server, error) {
+func NewServer(config *config.Config, dbStore db.Store) (*Server, error) {
 	s := &Server{
-		cfg: config,
+		cfg:     config,
+		dbStore: dbStore,
 	}
 
 	s.SetupRouter()
@@ -25,9 +27,9 @@ func NewServer(config *config.Config) (*Server, error) {
 func (s *Server) SetupRouter() {
 	router := gin.Default()
 
-	router.POST("/api/v1/words/add", s.addWord)
-	router.GET("/api/v1/words/review", s.reviewWords)
-	router.POST("/api/v1/words/complete", s.completeWord)
+	router.POST("/api/v1/vocabs/add", s.newVocab)
+	router.GET("/api/v1/vocabs/review", s.reviewWords)
+	router.POST("/api/v1/vocabs/complete", s.completeWord)
 
 	s.router = router
 }
