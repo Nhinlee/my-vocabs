@@ -30,7 +30,8 @@ deploy:
 	--image gcr.io/lla-app-395103/my-vocabs:latest \
 	--platform managed \
 	--region us-central1 \
-	--allow-unauthenticated
+	--allow-unauthenticated \
+	--update-secrets DB_SOURCE_PROD=my-vocabs-db-source:latest
 
 # drop-db:
 # 	docker exec -it postgres_db dropdb -U nhinlee my_vocabs
@@ -38,5 +39,11 @@ deploy:
 migrate-up:
 	migrate -path ./internal/my_vocabs/db/migrations -database "postgresql://nhinlee:123456@localhost:5432/my_vocabs?sslmode=disable" -verbose up
 
+migrate-up-prod:
+	migrate -path ./internal/my_vocabs/db/migrations -database $$DB_PATH -verbose up
+
 access-db:
 	docker exec -it postgres_db psql -U nhinlee -d postgres
+
+access-db-prod:
+	psql $$DB_PATH
