@@ -10,7 +10,10 @@ import (
 
 type Querier interface {
 	CreateVocab(ctx context.Context, arg CreateVocabParams) (Vocab, error)
+	GetVocabByName(ctx context.Context, word string) (Vocab, error)
 	ListVocabs(ctx context.Context) ([]Vocab, error)
+	ReviewVocabs(ctx context.Context) ([]Vocab, error)
+	UpdateNextReviewByName(ctx context.Context, arg UpdateNextReviewByNameParams) (Vocab, error)
 }
 
 var _ Querier = (*Queries)(nil)

@@ -9,10 +9,12 @@ import (
 )
 
 type Vocab struct {
-	VocabID   string             `json:"vocab_id"`
-	Word      string             `json:"word"`
-	ImageUrls []string           `json:"image_urls"`
-	CreatedAt pgtype.Timestamptz `json:"created_at"`
-	UpdatedAt pgtype.Timestamptz `json:"updated_at"`
-	DeletedAt pgtype.Timestamptz `json:"deleted_at"`
+	VocabID      string             `json:"vocab_id"`
+	Word         string             `json:"word"`
+	ImageUrls    []string           `json:"image_urls"`
+	NextReview   pgtype.Timestamptz `json:"next_review"`
+	ReviewedTime pgtype.Int4        `json:"reviewed_time"`
+	CreatedAt    pgtype.Timestamptz `json:"created_at"`
+	UpdatedAt    pgtype.Timestamptz `json:"updated_at"`
+	DeletedAt    pgtype.Timestamptz `json:"deleted_at"`
 }

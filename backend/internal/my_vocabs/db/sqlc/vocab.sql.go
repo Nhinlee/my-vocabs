@@ -7,6 +7,8 @@ package db
 
 import (
 	"context"
+
+	"github.com/jackc/pgx/v5/pgtype"
 )
 
 const createVocab = `-- name: CreateVocab :one
@@ -16,7 +18,7 @@ INSERT INTO vocab (
     image_urls
 ) VALUES (
     $1, $2, $3
-) RETURNING vocab_id, word, image_urls, created_at, updated_at, deleted_at
+) RETURNING vocab_id, word, image_urls, next_review, reviewed_time, created_at, updated_at, deleted_at
 `
 
 type CreateVocabParams struct {
@@ -32,6 +34,28 @@ func (q *Queries) CreateVocab(ctx context.Context, arg CreateVocabParams) (Vocab
 		&i.VocabID,
 		&i.Word,
 		&i.ImageUrls,
+		&i.NextReview,
+		&i.ReviewedTime,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+		&i.DeletedAt,
+	)
+	return i, err
+}
+
+const getVocabByName = `-- name: GetVocabByName :one
+SELECT vocab_id, word, image_urls, next_review, reviewed_time, created_at, updated_at, deleted_at FROM vocab WHERE word = $1
+`
+
+func (q *Queries) GetVocabByName(ctx context.Context, word string) (Vocab, error) {
+	row := q.db.QueryRow(ctx, getVocabByName, word)
+	var i Vocab
+	err := row.Scan(
+		&i.VocabID,
+		&i.Word,
+		&i.ImageUrls,
+		&i.NextReview,
+		&i.ReviewedTime,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 		&i.DeletedAt,
@@ -40,7 +64,7 @@ func (q *Queries) CreateVocab(ctx context.Context, arg CreateVocabParams) (Vocab
 }
 
 const listVocabs = `-- name: ListVocabs :many
-SELECT vocab_id, word, image_urls, created_at, updated_at, deleted_at FROM vocab ORDER BY created_at
+SELECT vocab_id, word, image_urls, next_review, reviewed_time, created_at, updated_at, deleted_at FROM vocab ORDER BY created_at
 `
 
 func (q *Queries) ListVocabs(ctx context.Context) ([]Vocab, error) {
@@ -56,6 +80,8 @@ func (q *Queries) ListVocabs(ctx context.Context) ([]Vocab, error) {
 			&i.VocabID,
 			&i.Word,
 			&i.ImageUrls,
+			&i.NextReview,
+			&i.ReviewedTime,
 			&i.CreatedAt,
 			&i.UpdatedAt,
 			&i.DeletedAt,
@@ -68,4 +94,63 @@ func (q *Queries) ListVocabs(ctx context.Context) ([]Vocab, error) {
 		return nil, err
 	}
 	return items, nil
+}
+
+const reviewVocabs = `-- name: ReviewVocabs :many
+SELECT vocab_id, word, image_urls, next_review, reviewed_time, created_at, updated_at, deleted_at FROM vocab WHERE next_review <= NOW() ORDER BY next_review
+`
+
+func (q *Queries) ReviewVocabs(ctx context.Context) ([]Vocab, error) {
+	rows, err := q.db.Query(ctx, reviewVocabs)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []Vocab{}
+	for rows.Next() {
+		var i Vocab
+		if err := rows.Scan(
+			&i.VocabID,
+			&i.Word,
+			&i.ImageUrls,
+			&i.NextReview,
+			&i.ReviewedTime,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+			&i.DeletedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const updateNextReviewByName = `-- name: UpdateNextReviewByName :one
+UPDATE vocab SET next_review = $2, reviewed_time = $3 WHERE word = $1 RETURNING vocab_id, word, image_urls, next_review, reviewed_time, created_at, updated_at, deleted_at
+`
+
+type UpdateNextReviewByNameParams struct {
+	Word         string             `json:"word"`
+	NextReview   pgtype.Timestamptz `json:"next_review"`
+	ReviewedTime pgtype.Int4        `json:"reviewed_time"`
+}
+
+func (q *Queries) UpdateNextReviewByName(ctx context.Context, arg UpdateNextReviewByNameParams) (Vocab, error) {
+	row := q.db.QueryRow(ctx, updateNextReviewByName, arg.Word, arg.NextReview, arg.ReviewedTime)
+	var i Vocab
+	err := row.Scan(
+		&i.VocabID,
+		&i.Word,
+		&i.ImageUrls,
+		&i.NextReview,
+		&i.ReviewedTime,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+		&i.DeletedAt,
+	)
+	return i, err
 }

@@ -6,6 +6,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/jackc/pgx/v5/pgtype"
 )
 
 type NewVocabRequest struct {
@@ -30,11 +31,63 @@ func (s *Server) newVocab(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, w)
 }
 
+type ReviewWordsResponse struct {
+	Count int      `json:"count" binding:"required"`
+	Words []string `json:"words" binding:"required"`
+}
+
 func (s *Server) reviewWords(ctx *gin.Context) {
-	words := []string{"apple", "banana", "cherry"}
-	ctx.JSON(http.StatusOK, gin.H{"words": words})
+	vocabs, err := s.dbStore.ReviewVocabs(ctx)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+		return
+	}
+
+	words := make([]string, 0)
+	for _, v := range vocabs {
+		words = append(words, v.Word)
+	}
+
+	ctx.JSON(http.StatusOK, ReviewWordsResponse{
+		Count: len(words),
+		Words: words,
+	})
+}
+
+type CompleteWordRequest struct {
+	Word string `json:"word" binding:"required"`
 }
 
 func (s *Server) completeWord(ctx *gin.Context) {
-	ctx.JSON(http.StatusOK, gin.H{"message": "Word marked as reviewed"})
+	var req CompleteWordRequest
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		ctx.JSON(http.StatusBadRequest, errorResponse(err))
+		return
+	}
+
+	vocab, err := s.dbStore.GetVocabByName(ctx, req.Word)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+		return
+	}
+
+	// Update next review time and reviewed time
+	updatedReviewedTime := vocab.ReviewedTime.Int32 + 1
+	_, err = s.dbStore.UpdateNextReviewByName(ctx, db.UpdateNextReviewByNameParams{
+		Word: req.Word,
+		NextReview: pgtype.Timestamptz{
+			Time:  vocab.NextReview.Time.AddDate(0, 0, int(updatedReviewedTime)+2),
+			Valid: true,
+		},
+		ReviewedTime: pgtype.Int4{
+			Int32: updatedReviewedTime,
+			Valid: true,
+		},
+	})
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{"message": "Word completed successfully"})
 }
