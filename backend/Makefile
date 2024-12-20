@@ -47,6 +47,9 @@ access-db-prod:
 	psql $$DB_PATH
 
 reset-db:
-	make drop-db
-	make init-db
+	docker exec -it postgres_db psql -U nhinlee -d my_vocabs -c "DROP TABLE IF EXISTS schema_migrations;"
 	make migrate-up
+
+reset-db-prod:
+	psql $$DB_PATH -c "DROP TABLE IF EXISTS schema_migrations;"
+	make migrate-up-prod
