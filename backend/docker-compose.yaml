@@ -23,6 +23,7 @@ services:
     environment:
       GIN_MODE: release
       DB_SOURCE_SECRET: "user=nhinlee password=123456 dbname=my_vocabs host=db port=5432 sslmode=disable"
+      GSA_KEY_SECRET: "..."
     restart: unless-stopped
     depends_on:
       - db

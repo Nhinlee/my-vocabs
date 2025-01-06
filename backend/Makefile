@@ -24,7 +24,8 @@ deploy:
 	--platform managed \
 	--region us-central1 \
 	--allow-unauthenticated \
-	--update-secrets DB_SOURCE_PROD=my-vocabs-db-source:latest
+	--update-secrets DB_SOURCE_SECRET=my-vocabs-db-source:latest \
+	--update-secrets GSA_KEY_SECRET=my-vocabs-gsa-key:latest \
 
 
 # Database -------------------------------------------------------------------------------------------------

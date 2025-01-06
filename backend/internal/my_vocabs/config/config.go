@@ -6,6 +6,8 @@ type Config struct {
 	DBDriver          string `mapstructure:"DB_DRIVER"`
 	DBSource          string `mapstructure:"DB_SOURCE"`
 	HttpServerAddress string `mapstructure:"HTTP_SERVER_ADDRESS"`
+	GSAKey            string `mapstructure:"GSA_KEY"`
+	GSAEmail          string `mapstructure:"GSA_EMAIL"`
 }
 
 func LoadConfig(path string) (*Config, error) {
