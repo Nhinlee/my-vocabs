@@ -111,3 +111,13 @@ func (s *Server) deleteWord(ctx *gin.Context) {
 
 	ctx.JSON(http.StatusOK, gin.H{"message": "Word deleted successfully"})
 }
+
+func (s *Server) listVocabs(ctx *gin.Context) {
+	vocabs, err := s.dbStore.ListVocabs(ctx)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+		return
+	}
+
+	ctx.JSON(http.StatusOK, vocabs)
+}
