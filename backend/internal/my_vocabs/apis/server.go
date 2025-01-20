@@ -38,6 +38,7 @@ func (s *Server) SetupRouter() {
 	router.POST("/api/v1/vocabs/add", s.newVocab)
 	router.GET("/api/v1/vocabs/review", s.reviewWords)
 	router.POST("/api/v1/vocabs/complete", s.completeWord)
+	router.POST("/api/v1/vocabs/delete", s.deleteWord)
 
 	router.POST("/api/v1/upload/generate-presigned-url", s.handleGeneratePresignedURL)
 

@@ -91,3 +91,23 @@ func (s *Server) completeWord(ctx *gin.Context) {
 
 	ctx.JSON(http.StatusOK, gin.H{"message": "Word completed successfully"})
 }
+
+type DeleteWordRequest struct {
+	Word string `json:"word" binding:"required"`
+}
+
+func (s *Server) deleteWord(ctx *gin.Context) {
+	var req DeleteWordRequest
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		ctx.JSON(http.StatusBadRequest, errorResponse(err))
+		return
+	}
+
+	_, err := s.dbStore.DeleteVocabByName(ctx, req.Word)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{"message": "Word deleted successfully"})
+}

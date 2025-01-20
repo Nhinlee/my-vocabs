@@ -18,3 +18,6 @@ SELECT * FROM vocab WHERE next_review <= NOW() ORDER BY next_review;
 
 -- name: UpdateNextReviewByName :one
 UPDATE vocab SET next_review = $2, reviewed_time = $3 WHERE word = $1 RETURNING *;
+
+-- name: DeleteVocabByName :one
+DELETE FROM vocab WHERE word = $1 RETURNING *;
