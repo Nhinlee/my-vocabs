@@ -10,21 +10,27 @@ const WordList: React.FC = () => {
   const [words, setWords] = useState<Word[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const [searchQuery, setSearchQuery] = useState<string>(''); // State for search query
+
+  const fetchVocabList = async (word: string) => {
+    try {
+      setLoading(true);
+      const vocabList = await getVocabList({ word });
+      setWords(vocabList);
+    } catch (err) {
+      setError('Failed to fetch vocab list. Please try again later.');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    const fetchVocabList = async () => {
-      try {
-        const vocabList = await getVocabList();
-        setWords(vocabList);
-      } catch (err) {
-        setError('Failed to fetch vocab list. Please try again later.');
-      } finally {
-        setLoading(false);
-      }
-    };
+    fetchVocabList(searchQuery);
+  }, [searchQuery]); // Fetch vocab list whenever the search query changes
 
-    fetchVocabList();
-  }, []);
+  const handleSearch = (query: string) => {
+    setSearchQuery(query); // Update search query state
+  };
 
   if (loading) {
     return <p>Loading...</p>;
@@ -37,7 +43,7 @@ const WordList: React.FC = () => {
   return (
     <div>
       <Header />
-      <SearchBar />
+      <SearchBar onSearch={handleSearch} />
       <FilterBar />
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem', padding: '2rem' }}>
         {words.map((word) => (
