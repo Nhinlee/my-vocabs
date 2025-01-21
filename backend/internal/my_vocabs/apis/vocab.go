@@ -113,7 +113,9 @@ func (s *Server) deleteWord(ctx *gin.Context) {
 }
 
 func (s *Server) listVocabs(ctx *gin.Context) {
-	vocabs, err := s.dbStore.ListVocabs(ctx)
+	wordFilter := ctx.Query("word")
+
+	vocabs, err := s.dbStore.ListVocabsByFilter(ctx, wordFilter)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
 		return

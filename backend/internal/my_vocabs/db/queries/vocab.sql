@@ -1,5 +1,11 @@
 -- name: ListVocabs :many
-SELECT * FROM vocab ORDER BY created_at;
+SELECT * FROM vocab ORDER BY created_at DESC;
+
+-- name: ListVocabsByFilter :many
+SELECT * 
+FROM vocab 
+WHERE ($1 = '' OR word ILIKE '%' || $1 || '%') -- Filter by word
+ORDER BY created_at DESC;
 
 -- name: GetVocabByName :one
 SELECT * FROM vocab WHERE word = $1;

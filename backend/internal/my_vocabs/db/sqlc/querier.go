@@ -13,6 +13,7 @@ type Querier interface {
 	DeleteVocabByName(ctx context.Context, word string) (Vocab, error)
 	GetVocabByName(ctx context.Context, word string) (Vocab, error)
 	ListVocabs(ctx context.Context) ([]Vocab, error)
+	ListVocabsByFilter(ctx context.Context, dollar_1 interface{}) ([]Vocab, error)
 	ReviewVocabs(ctx context.Context) ([]Vocab, error)
 	UpdateNextReviewByName(ctx context.Context, arg UpdateNextReviewByNameParams) (Vocab, error)
 }

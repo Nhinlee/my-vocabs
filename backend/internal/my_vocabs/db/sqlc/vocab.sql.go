@@ -84,11 +84,47 @@ func (q *Queries) GetVocabByName(ctx context.Context, word string) (Vocab, error
 }
 
 const listVocabs = `-- name: ListVocabs :many
-SELECT vocab_id, word, image_urls, next_review, reviewed_time, created_at, updated_at, deleted_at FROM vocab ORDER BY created_at
+SELECT vocab_id, word, image_urls, next_review, reviewed_time, created_at, updated_at, deleted_at FROM vocab ORDER BY created_at DESC
 `
 
 func (q *Queries) ListVocabs(ctx context.Context) ([]Vocab, error) {
 	rows, err := q.db.Query(ctx, listVocabs)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []Vocab{}
+	for rows.Next() {
+		var i Vocab
+		if err := rows.Scan(
+			&i.VocabID,
+			&i.Word,
+			&i.ImageUrls,
+			&i.NextReview,
+			&i.ReviewedTime,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+			&i.DeletedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const listVocabsByFilter = `-- name: ListVocabsByFilter :many
+SELECT vocab_id, word, image_urls, next_review, reviewed_time, created_at, updated_at, deleted_at 
+FROM vocab 
+WHERE ($1 = '' OR word ILIKE '%' || $1 || '%') -- Filter by word
+ORDER BY created_at DESC
+`
+
+func (q *Queries) ListVocabsByFilter(ctx context.Context, dollar_1 interface{}) ([]Vocab, error) {
+	rows, err := q.db.Query(ctx, listVocabsByFilter, dollar_1)
 	if err != nil {
 		return nil, err
 	}
