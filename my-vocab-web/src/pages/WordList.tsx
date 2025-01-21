@@ -51,7 +51,7 @@ const WordList: React.FC = () => {
     <div>
       <Header />
       <SearchBar searchQuery={searchQuery} onSearch={setSearchQuery} />
-      <FilterBar />
+      {/* <FilterBar /> */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem', padding: '2rem' }}>
         {words.map((word) => (
           <WordCard key={word.vocab_id} word={word.word} nextReview={word.next_review} />
