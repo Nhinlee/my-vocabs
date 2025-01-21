@@ -1,18 +1,13 @@
-import React, { useState } from 'react';
+import React from 'react';
 
 interface SearchBarProps {
-  onSearch: (query: string) => void;
+  searchQuery: string; // Pass the query from the parent
+  onSearch: (query: string) => void; // Callback to update query in the parent
 }
 
-const SearchBar: React.FC<SearchBarProps> = ({ onSearch }) => {
-  const [searchQuery, setSearchQuery] = useState<string>('');
-
+const SearchBar: React.FC<SearchBarProps> = ({ searchQuery, onSearch }) => {
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchQuery(e.target.value);
-  };
-
-  const handleSearch = () => {
-    onSearch(searchQuery);
+    onSearch(e.target.value); // Update the parent state directly
   };
 
   return (
@@ -20,12 +15,12 @@ const SearchBar: React.FC<SearchBarProps> = ({ onSearch }) => {
       <input
         type="text"
         placeholder="Search"
-        value={searchQuery}
-        onChange={handleInputChange}
+        value={searchQuery} // Controlled by the parent component
+        onChange={handleInputChange} // Update parent on every input change
         style={{ flex: 1, padding: '0.5rem', border: '1px solid #ddd', borderRadius: '4px' }}
       />
       <button
-        onClick={handleSearch}
+        onClick={() => onSearch(searchQuery)} // Trigger search explicitly if needed
         style={{ marginLeft: '0.5rem', padding: '0.5rem 1rem', border: 'none', background: '#000', color: '#fff', cursor: 'pointer' }}
       >
         🔍

@@ -10,7 +10,8 @@ const WordList: React.FC = () => {
   const [words, setWords] = useState<Word[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
-  const [searchQuery, setSearchQuery] = useState<string>(''); // State for search query
+  const [searchQuery, setSearchQuery] = useState<string>(''); // User's input
+  const [debouncedQuery, setDebouncedQuery] = useState<string>(''); // Debounced value
 
   const fetchVocabList = async (word: string) => {
     try {
@@ -24,13 +25,19 @@ const WordList: React.FC = () => {
     }
   };
 
+  // Debounce searchQuery updates
   useEffect(() => {
-    fetchVocabList(searchQuery);
-  }, [searchQuery]); // Fetch vocab list whenever the search query changes
+    const timer = setTimeout(() => {
+      setDebouncedQuery(searchQuery);
+    }, 500); // 500ms debounce time
 
-  const handleSearch = (query: string) => {
-    setSearchQuery(query); // Update search query state
-  };
+    return () => clearTimeout(timer); // Cleanup the timer on unmount or input change
+  }, [searchQuery]);
+
+  // Fetch data when the debounced query changes
+  useEffect(() => {
+    fetchVocabList(debouncedQuery);
+  }, [debouncedQuery]);
 
   if (loading) {
     return <p>Loading...</p>;
@@ -43,7 +50,7 @@ const WordList: React.FC = () => {
   return (
     <div>
       <Header />
-      <SearchBar onSearch={handleSearch} />
+      <SearchBar searchQuery={searchQuery} onSearch={setSearchQuery} />
       <FilterBar />
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem', padding: '2rem' }}>
         {words.map((word) => (
