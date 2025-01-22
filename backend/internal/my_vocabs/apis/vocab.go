@@ -123,3 +123,15 @@ func (s *Server) listVocabs(ctx *gin.Context) {
 
 	ctx.JSON(http.StatusOK, vocabs)
 }
+
+func (s *Server) getVocabByID(ctx *gin.Context) {
+	id := ctx.Param("id")
+
+	vocab, err := s.dbStore.GetVocabById(ctx, id)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+		return
+	}
+
+	ctx.JSON(http.StatusOK, vocab)
+}

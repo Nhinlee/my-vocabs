@@ -10,6 +10,9 @@ ORDER BY created_at DESC;
 -- name: GetVocabByName :one
 SELECT * FROM vocab WHERE word = $1;
 
+-- name: GetVocabById :one
+SELECT * FROM vocab WHERE vocab_id = $1;
+
 -- name: CreateVocab :one
 INSERT INTO vocab (
     vocab_id,

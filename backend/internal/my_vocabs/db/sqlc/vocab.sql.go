@@ -63,6 +63,26 @@ func (q *Queries) DeleteVocabByName(ctx context.Context, word string) (Vocab, er
 	return i, err
 }
 
+const getVocabById = `-- name: GetVocabById :one
+SELECT vocab_id, word, image_urls, next_review, reviewed_time, created_at, updated_at, deleted_at FROM vocab WHERE vocab_id = $1
+`
+
+func (q *Queries) GetVocabById(ctx context.Context, vocabID string) (Vocab, error) {
+	row := q.db.QueryRow(ctx, getVocabById, vocabID)
+	var i Vocab
+	err := row.Scan(
+		&i.VocabID,
+		&i.Word,
+		&i.ImageUrls,
+		&i.NextReview,
+		&i.ReviewedTime,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+		&i.DeletedAt,
+	)
+	return i, err
+}
+
 const getVocabByName = `-- name: GetVocabByName :one
 SELECT vocab_id, word, image_urls, next_review, reviewed_time, created_at, updated_at, deleted_at FROM vocab WHERE word = $1
 `

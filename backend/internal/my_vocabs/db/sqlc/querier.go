@@ -11,6 +11,7 @@ import (
 type Querier interface {
 	CreateVocab(ctx context.Context, arg CreateVocabParams) (Vocab, error)
 	DeleteVocabByName(ctx context.Context, word string) (Vocab, error)
+	GetVocabById(ctx context.Context, vocabID string) (Vocab, error)
 	GetVocabByName(ctx context.Context, word string) (Vocab, error)
 	ListVocabs(ctx context.Context) ([]Vocab, error)
 	ListVocabsByFilter(ctx context.Context, dollar_1 interface{}) ([]Vocab, error)

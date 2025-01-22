@@ -46,6 +46,7 @@ func (s *Server) SetupRouter() {
 	}))
 
 	router.GET("/api/v1/vocabs/list", s.listVocabs)
+	router.GET("/api/v1/vocabs/:id", s.getVocabByID)
 	router.POST("/api/v1/vocabs/add", s.newVocab)
 	router.GET("/api/v1/vocabs/review", s.reviewWords)
 	router.POST("/api/v1/vocabs/complete", s.completeWord)
