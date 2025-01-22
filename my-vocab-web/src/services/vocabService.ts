@@ -33,3 +33,13 @@ export const getVocabList = async (filters: VocabFilters = {}): Promise<Word[]> 
     throw error;
   }
 };
+
+export const getWordDetail = async (id: string): Promise<Word> => {
+  try {
+    const response = await axios.get(`${API_BASE_URL}/${id}`);
+    return response.data as Word;
+  } catch (error) {
+    console.error('Error fetching word details:', error);
+    throw error;
+  }
+}

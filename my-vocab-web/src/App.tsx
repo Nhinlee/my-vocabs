@@ -1,12 +1,22 @@
-import './App.css';
+import React from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import WordList from './pages/WordList';
+import WordDetail from './pages/WordDetail';
 
-function App() {
+const App: React.FC = () => {
   return (
-    <div className="App">
-      <WordList />
-    </div>
+    <Router>
+      <Routes>
+        <Route path="/" element={<WordList />} />
+        <Route
+          path="/word/:id"
+          element={
+            <WordDetail/>
+          }
+        />
+      </Routes>
+    </Router>
   );
-}
+};
 
 export default App;
