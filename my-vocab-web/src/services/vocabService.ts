@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { Word } from '../models/Word';
 
-const API_BASE_URL = 'http://localhost:8080/api/v1/vocabs';
+const API_BASE_URL = 'https://my-vocabs-821554367069.us-central1.run.app/api/v1/vocabs';
 
 // Define a type for the filter options
 interface VocabFilters {
