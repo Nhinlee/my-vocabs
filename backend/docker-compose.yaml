@@ -27,12 +27,12 @@ services:
     restart: unless-stopped
     depends_on:
       - db
-  my_vocabs_web:
-    build:
-      context: ../my-vocab-web
-      dockerfile: ./Dockerfile
-    ports:
-      - "3000:80"
+  # my_vocabs_web:
+  #   build:
+  #     context: ../my-vocab-web
+  #     dockerfile: ./Dockerfile
+  #   ports:
+  #     - "3000:80"
 
 volumes:
   my_vocabs_data:
