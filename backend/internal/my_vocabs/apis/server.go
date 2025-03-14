@@ -38,7 +38,7 @@ func (s *Server) SetupRouter() {
 
 	// Configure CORS
 	router.Use(cors.New(cors.Config{
-		AllowOrigins:     []string{"https://my-vocabs-sage.vercel.app"},       // Allowed origins
+		AllowOrigins:     s.cfg.AllowOrigins,                                  // Allowed origins
 		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE"},            // Allowed methods
 		AllowHeaders:     []string{"Origin", "Content-Type", "Authorization"}, // Allowed headers
 		ExposeHeaders:    []string{"Content-Length"},

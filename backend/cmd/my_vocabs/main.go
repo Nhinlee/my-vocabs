@@ -13,24 +13,27 @@ import (
 )
 
 func main() {
-	cfg, err := config.LoadConfig(".")
+	cfg, err := config.LoadConfigAndSecrets()
 	if err != nil {
 		log.Fatalf("Failed to load config: %v", err)
 	}
 
 	ctx := context.Background()
-	conn, err := pgx.Connect(ctx, cfg.DBSource)
+	conn, err := pgx.Connect(ctx, cfg.Secrets.DBSource)
 	if err != nil {
 		log.Fatalf("Failed to connect DB: %v", err)
 	}
 	// TODO: replace by log pkg
-	log.Printf("Connect DB successfully!!!")
+	log.Printf("Connected to DB successfully!!!")
 	dbStore := db.NewStore(conn)
 
 	// Connect to file store (GCS)
-	fileStore, err := fs.NewGCSFileStore(cfg.GSAEmail, cfg.GSAKey)
-	if err != nil {
-		log.Fatal("cannot connect to file store: ", err)
+	var fileStore fs.FileStore
+	if cfg.Env != config.LOCAL {
+		fileStore, err = fs.NewGCSFileStore(cfg.Secrets.GSAEmail, cfg.Secrets.GSAKey)
+		if err != nil {
+			log.Fatal("cannot connect to file store: ", err)
+		}
 	}
 
 	runHTTPServer(cfg, dbStore, fileStore)

@@ -16,9 +16,14 @@ mark-complete:
 	curl -X POST http://localhost:8080/api/v1/vocabs/complete -d '{"word": "$w"}'
 
 # Build & deploy -------------------------------------------------------------------------------------------------
-build:
-	docker buildx build --platform linux/amd64 -t gcr.io/lla-app-395103/my-vocabs:latest -f ./cmd/my_vocabs/Dockerfile --push .
-deploy:
+build-prod:
+	docker buildx build \
+		--platform linux/arm64 \
+		-t gcr.io/lla-app-395103/my-vocabs:latest \
+		-f ./cmd/my_vocabs/Dockerfile \
+		--build-arg ENV=prod \
+		--push .
+deploy-prod:
 	gcloud run deploy my-vocabs \
 	--image gcr.io/lla-app-395103/my-vocabs:latest \
 	--platform managed \
