@@ -1,3 +1,4 @@
 env: "prod"  
 http_server_address: "0.0.0.0:8080"
-allow_origins: "https://my-vocabs.netlify.app/"
+allow_origins: 
+  - "https://my-vocabs.netlify.app"

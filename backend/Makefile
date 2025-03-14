@@ -24,6 +24,7 @@ build-prod:
 		--build-arg ENV=prod \
 		--push .
 deploy-prod:
+	make build-prod && \
 	gcloud run deploy my-vocabs \
 	--image gcr.io/lla-app-395103/my-vocabs:latest \
 	--platform managed \

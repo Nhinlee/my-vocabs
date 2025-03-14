@@ -1,3 +1,4 @@
 env: "local"
 http_server_address: "0.0.0.0:8080"     
-allow_origins: "*"
+allow_origins: 
+  - "*"
